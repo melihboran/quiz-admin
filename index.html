@@ -3,416 +3,159 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Quiz Admin Panel</title>
+<title>Quiz Admin</title>
 <style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg: #f7f6f3; --surface: #ffffff; --surface2: #f0efe9;
+  --border: #e2e0d8; --border-strong: #c8c6bc;
+  --text: #1a1a18; --text-muted: #6b6a64;
+  --accent: #2563eb; --accent-bg: #eff6ff; --accent-border: #bfdbfe;
+  --success: #16a34a; --success-bg: #f0fdf4;
+  --danger: #dc2626; --danger-bg: #fef2f2;
+  --warning: #d97706; --warning-bg: #fffbeb;
+  --radius: 8px;
+  --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+body { font-family: var(--font); background: var(--bg); color: var(--text); min-height: 100vh; font-size: 15px; line-height: 1.6; }
 
-  :root {
-    --bg: #f7f6f3;
-    --surface: #ffffff;
-    --surface2: #f0efe9;
-    --border: #e2e0d8;
-    --border-strong: #c8c6bc;
-    --text: #1a1a18;
-    --text-muted: #6b6a64;
-    --accent: #2563eb;
-    --accent-bg: #eff6ff;
-    --accent-border: #bfdbfe;
-    --success: #16a34a;
-    --success-bg: #f0fdf4;
-    --danger: #dc2626;
-    --danger-bg: #fef2f2;
-    --radius: 8px;
-    --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  }
+/* LOGIN */
+#login-screen { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 2rem; }
+.login-card { background: var(--surface); border: 0.5px solid var(--border); border-radius: 12px; padding: 2.5rem; width: 100%; max-width: 380px; }
+.login-card h1 { font-size: 20px; font-weight: 500; margin-bottom: 0.25rem; }
+.login-card p { font-size: 13px; color: var(--text-muted); margin-bottom: 1.75rem; }
 
-  body {
-    font-family: var(--font);
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-    font-size: 15px;
-    line-height: 1.6;
-  }
+/* APP */
+#app { display: none; min-height: 100vh; }
+header { background: var(--surface); border-bottom: 0.5px solid var(--border); padding: 0 2rem; height: 56px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 10; }
+header h1 { font-size: 16px; font-weight: 500; }
+.header-right { display: flex; align-items: center; gap: 12px; }
+main { max-width: 720px; margin: 0 auto; padding: 2rem; }
 
-  /* LOGIN */
-  #login-screen {
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 2rem;
-  }
+/* STEPS */
+.steps { display: flex; align-items: center; gap: 0; margin-bottom: 1.5rem; }
+.step { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 500; color: var(--text-muted); }
+.step-num { width: 24px; height: 24px; border-radius: 50%; border: 1.5px solid var(--border-strong); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; flex-shrink: 0; }
+.step.active { color: var(--accent); }
+.step.active .step-num { border-color: var(--accent); background: var(--accent-bg); color: var(--accent); }
+.step.done { color: var(--success); }
+.step.done .step-num { border-color: var(--success); background: var(--success-bg); color: var(--success); }
+.step-line { flex: 1; height: 1px; background: var(--border); margin: 0 8px; }
 
-  .login-card {
-    background: var(--surface);
-    border: 0.5px solid var(--border);
-    border-radius: 12px;
-    padding: 2.5rem;
-    width: 100%;
-    max-width: 380px;
-  }
+/* CARD */
+.card { background: var(--surface); border: 0.5px solid var(--border); border-radius: 12px; padding: 1.5rem; margin-bottom: 1rem; }
+.card-title { font-size: 13px; font-weight: 500; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 1rem; }
 
-  .login-card h1 {
-    font-size: 20px;
-    font-weight: 500;
-    margin-bottom: 0.25rem;
-  }
+/* FORM */
+label { display: block; font-size: 13px; font-weight: 500; margin-bottom: 0.4rem; color: var(--text); }
+input[type="text"], input[type="password"], input[type="url"], input[type="number"], select, textarea {
+  width: 100%; padding: 0 12px; height: 36px;
+  border: 0.5px solid var(--border-strong); border-radius: var(--radius);
+  font-family: var(--font); font-size: 14px; color: var(--text); background: var(--surface);
+  outline: none; transition: border-color 0.15s;
+}
+textarea { height: auto; padding: 10px 12px; resize: vertical; min-height: 72px; }
+input:focus, select:focus, textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }
+.field { margin-bottom: 1rem; }
+.field:last-child { margin-bottom: 0; }
+.field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.hint { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
 
-  .login-card p {
-    font-size: 13px;
-    color: var(--text-muted);
-    margin-bottom: 1.75rem;
-  }
+/* IMAGE UPLOAD ZONE */
+.upload-zone {
+  border: 1.5px dashed var(--border-strong); border-radius: 12px;
+  padding: 2rem; text-align: center; cursor: pointer;
+  transition: all 0.2s; background: var(--surface2);
+  position: relative;
+}
+.upload-zone:hover { border-color: var(--accent); background: var(--accent-bg); }
+.upload-zone.dragging { border-color: var(--accent); background: var(--accent-bg); }
+.upload-zone input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
+.upload-icon { font-size: 32px; margin-bottom: 8px; }
+.upload-text { font-size: 14px; font-weight: 500; margin-bottom: 4px; }
+.upload-sub { font-size: 12px; color: var(--text-muted); }
 
-  /* LAYOUT */
-  #app { display: none; min-height: 100vh; }
+/* COMPRESS PANEL */
+#compress-panel { display: none; }
+.img-compare { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 1rem; }
+.img-box { border: 0.5px solid var(--border); border-radius: var(--radius); overflow: hidden; background: var(--surface2); }
+.img-box-label { padding: 8px 12px; font-size: 12px; font-weight: 500; color: var(--text-muted); border-bottom: 0.5px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+.img-box img { width: 100%; height: 160px; object-fit: cover; display: block; }
+.size-badge { font-size: 11px; font-weight: 600; padding: 2px 7px; border-radius: 10px; }
+.size-ok { background: var(--success-bg); color: var(--success); }
+.size-warn { background: var(--warning-bg); color: var(--warning); }
 
-  header {
-    background: var(--surface);
-    border-bottom: 0.5px solid var(--border);
-    padding: 0 2rem;
-    height: 56px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    position: sticky;
-    top: 0;
-    z-index: 10;
-  }
+/* QUALITY SLIDER */
+.slider-row { display: flex; align-items: center; gap: 12px; margin-bottom: 1rem; }
+.slider-row label { font-size: 13px; white-space: nowrap; margin: 0; }
+input[type="range"] { flex: 1; height: 4px; accent-color: var(--accent); }
+.slider-val { font-size: 13px; font-weight: 500; min-width: 36px; text-align: right; }
 
-  header h1 { font-size: 16px; font-weight: 500; }
+/* UPLOAD PROGRESS */
+.progress-bar { height: 4px; background: var(--border); border-radius: 2px; overflow: hidden; margin-top: 8px; }
+.progress-fill { height: 100%; background: var(--accent); border-radius: 2px; transition: width 0.3s; width: 0%; }
 
-  .header-right { display: flex; align-items: center; gap: 12px; }
+/* OPTIONS */
+.options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.option-item { background: var(--surface2); border: 0.5px solid var(--border); border-radius: var(--radius); padding: 10px 12px; }
+.option-item.correct { background: var(--success-bg); border-color: #86efac; }
+.option-header { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+.option-badge { width: 22px; height: 22px; border-radius: 50%; background: var(--border-strong); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 500; color: var(--text-muted); flex-shrink: 0; }
+.option-item.correct .option-badge { background: var(--success); color: #fff; }
+.option-label { font-size: 12px; font-weight: 500; color: var(--text-muted); }
+.option-item.correct .option-label { color: var(--success); }
+.option-item input[type="text"] { height: 32px; font-size: 13px; }
 
-  main { max-width: 720px; margin: 0 auto; padding: 2rem; }
+.correct-selector { display: flex; gap: 8px; }
+.correct-btn { flex: 1; height: 34px; border: 0.5px solid var(--border-strong); border-radius: var(--radius); background: var(--surface); font-family: var(--font); font-size: 13px; font-weight: 500; color: var(--text-muted); cursor: pointer; transition: all 0.15s; }
+.correct-btn:hover { background: var(--surface2); }
+.correct-btn.active { background: var(--success-bg); border-color: #86efac; color: var(--success); }
 
-  /* FORM */
-  .card {
-    background: var(--surface);
-    border: 0.5px solid var(--border);
-    border-radius: 12px;
-    padding: 1.5rem;
-    margin-bottom: 1rem;
-  }
+/* BUTTONS */
+button { font-family: var(--font); cursor: pointer; transition: all 0.15s; }
+.btn { height: 36px; padding: 0 16px; border-radius: var(--radius); font-size: 14px; font-weight: 500; border: 0.5px solid var(--border-strong); background: var(--surface); color: var(--text); }
+.btn:hover { background: var(--surface2); }
+.btn:active { transform: scale(0.98); }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+.btn-primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+.btn-primary:hover { background: #1d4ed8; border-color: #1d4ed8; }
+.btn-success { background: var(--success); border-color: var(--success); color: #fff; }
+.btn-success:hover { background: #15803d; }
+.btn-lg { height: 44px; padding: 0 24px; font-size: 15px; width: 100%; }
+.btn-sm { height: 30px; padding: 0 12px; font-size: 13px; }
+.btn-danger { color: var(--danger); border-color: #fca5a5; }
+.btn-danger:hover { background: var(--danger-bg); }
 
-  .card-title {
-    font-size: 13px;
-    font-weight: 500;
-    color: var(--text-muted);
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    margin-bottom: 1rem;
-  }
+/* STATUS ROW */
+.status-row { display: flex; align-items: center; gap: 8px; padding: 10px 14px; border-radius: var(--radius); font-size: 13px; margin-bottom: 1rem; }
+.status-row.info { background: var(--accent-bg); border: 0.5px solid var(--accent-border); color: var(--accent); }
+.status-row.success { background: var(--success-bg); border: 0.5px solid #86efac; color: var(--success); }
+.status-row.warn { background: var(--warning-bg); border: 0.5px solid #fde68a; color: var(--warning); }
 
-  label {
-    display: block;
-    font-size: 13px;
-    font-weight: 500;
-    margin-bottom: 0.4rem;
-    color: var(--text);
-  }
+/* TOAST */
+#toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--text); color: #fff; padding: 10px 20px; border-radius: 20px; font-size: 14px; opacity: 0; transition: all 0.25s; pointer-events: none; white-space: nowrap; z-index: 100; }
+#toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+#toast.success { background: var(--success); }
+#toast.error { background: var(--danger); }
 
-  input[type="text"],
-  input[type="password"],
-  input[type="url"],
-  input[type="number"],
-  select,
-  textarea {
-    width: 100%;
-    padding: 0 12px;
-    height: 36px;
-    border: 0.5px solid var(--border-strong);
-    border-radius: var(--radius);
-    font-family: var(--font);
-    font-size: 14px;
-    color: var(--text);
-    background: var(--surface);
-    outline: none;
-    transition: border-color 0.15s;
-  }
+/* SPINNER */
+.spinner { width: 18px; height: 18px; border: 2px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 50%; animation: spin 0.7s linear infinite; display: none; margin: 0 auto; }
+@keyframes spin { to { transform: rotate(360deg); } }
 
-  textarea {
-    height: auto;
-    padding: 10px 12px;
-    resize: vertical;
-    min-height: 72px;
-  }
+/* RECENT */
+.recent-item { padding: 12px 0; border-bottom: 0.5px solid var(--border); display: flex; align-items: flex-start; gap: 12px; }
+.recent-item:last-child { border-bottom: none; }
+.recent-thumb { width: 48px; height: 36px; border-radius: 6px; object-fit: cover; background: var(--surface2); border: 0.5px solid var(--border); flex-shrink: 0; }
+.recent-info { flex: 1; min-width: 0; }
+.recent-q { font-size: 13px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.recent-meta { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+.badge { display: inline-block; padding: 2px 8px; border-radius: 20px; font-size: 11px; font-weight: 500; background: var(--accent-bg); color: var(--accent); border: 0.5px solid var(--accent-border); }
 
-  input:focus, select:focus, textarea:focus {
-    border-color: var(--accent);
-    box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
-  }
+.divider { border: none; border-top: 0.5px solid var(--border); margin: 1rem 0; }
 
-  .field { margin-bottom: 1rem; }
-  .field:last-child { margin-bottom: 0; }
-
-  .field-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-  }
-
-  /* OPTIONS */
-  .options-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-  }
-
-  .option-item {
-    background: var(--surface2);
-    border: 0.5px solid var(--border);
-    border-radius: var(--radius);
-    padding: 10px 12px;
-  }
-
-  .option-item.correct {
-    background: var(--success-bg);
-    border-color: #86efac;
-  }
-
-  .option-header {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 6px;
-  }
-
-  .option-badge {
-    width: 22px;
-    height: 22px;
-    border-radius: 50%;
-    background: var(--border-strong);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 11px;
-    font-weight: 500;
-    color: var(--text-muted);
-    flex-shrink: 0;
-  }
-
-  .option-item.correct .option-badge {
-    background: var(--success);
-    color: #fff;
-  }
-
-  .option-label {
-    font-size: 12px;
-    font-weight: 500;
-    color: var(--text-muted);
-  }
-
-  .option-item.correct .option-label {
-    color: var(--success);
-  }
-
-  .option-item input[type="text"] {
-    height: 32px;
-    font-size: 13px;
-  }
-
-  .correct-selector {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-  }
-
-  .correct-btn {
-    flex: 1;
-    min-width: 60px;
-    height: 34px;
-    border: 0.5px solid var(--border-strong);
-    border-radius: var(--radius);
-    background: var(--surface);
-    font-family: var(--font);
-    font-size: 13px;
-    font-weight: 500;
-    color: var(--text-muted);
-    cursor: pointer;
-    transition: all 0.15s;
-  }
-
-  .correct-btn:hover { background: var(--surface2); }
-
-  .correct-btn.active {
-    background: var(--success-bg);
-    border-color: #86efac;
-    color: var(--success);
-  }
-
-  /* IMAGE PREVIEW */
-  .image-preview {
-    margin-top: 10px;
-    border-radius: var(--radius);
-    overflow: hidden;
-    border: 0.5px solid var(--border);
-    display: none;
-    background: var(--surface2);
-  }
-
-  .image-preview img {
-    width: 100%;
-    max-height: 200px;
-    object-fit: cover;
-    display: block;
-  }
-
-  /* BUTTONS */
-  button {
-    font-family: var(--font);
-    cursor: pointer;
-    transition: all 0.15s;
-  }
-
-  .btn {
-    height: 36px;
-    padding: 0 16px;
-    border-radius: var(--radius);
-    font-size: 14px;
-    font-weight: 500;
-    border: 0.5px solid var(--border-strong);
-    background: var(--surface);
-    color: var(--text);
-  }
-
-  .btn:hover { background: var(--surface2); }
-  .btn:active { transform: scale(0.98); }
-
-  .btn-primary {
-    background: var(--accent);
-    border-color: var(--accent);
-    color: #fff;
-  }
-
-  .btn-primary:hover { background: #1d4ed8; border-color: #1d4ed8; }
-
-  .btn-lg {
-    height: 44px;
-    padding: 0 24px;
-    font-size: 15px;
-    width: 100%;
-  }
-
-  .btn-sm {
-    height: 30px;
-    padding: 0 12px;
-    font-size: 13px;
-  }
-
-  .btn-danger { color: var(--danger); border-color: #fca5a5; }
-  .btn-danger:hover { background: var(--danger-bg); }
-
-  /* TOAST */
-  #toast {
-    position: fixed;
-    bottom: 24px;
-    left: 50%;
-    transform: translateX(-50%) translateY(20px);
-    background: var(--text);
-    color: #fff;
-    padding: 10px 20px;
-    border-radius: 20px;
-    font-size: 14px;
-    opacity: 0;
-    transition: all 0.25s;
-    pointer-events: none;
-    white-space: nowrap;
-    z-index: 100;
-  }
-
-  #toast.show {
-    opacity: 1;
-    transform: translateX(-50%) translateY(0);
-  }
-
-  #toast.success { background: var(--success); }
-  #toast.error { background: var(--danger); }
-
-  /* RECENT */
-  .recent-item {
-    padding: 12px 0;
-    border-bottom: 0.5px solid var(--border);
-    display: flex;
-    align-items: flex-start;
-    gap: 12px;
-  }
-
-  .recent-item:last-child { border-bottom: none; }
-
-  .recent-thumb {
-    width: 48px;
-    height: 36px;
-    border-radius: 6px;
-    object-fit: cover;
-    background: var(--surface2);
-    border: 0.5px solid var(--border);
-    flex-shrink: 0;
-  }
-
-  .recent-info { flex: 1; min-width: 0; }
-
-  .recent-q {
-    font-size: 13px;
-    font-weight: 500;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .recent-meta {
-    font-size: 12px;
-    color: var(--text-muted);
-    margin-top: 2px;
-  }
-
-  .badge {
-    display: inline-block;
-    padding: 2px 8px;
-    border-radius: 20px;
-    font-size: 11px;
-    font-weight: 500;
-    background: var(--accent-bg);
-    color: var(--accent);
-    border: 0.5px solid var(--accent-border);
-  }
-
-  /* FIREBASE SETUP */
-  .setup-notice {
-    background: #fffbeb;
-    border: 0.5px solid #fde68a;
-    border-radius: var(--radius);
-    padding: 12px 16px;
-    font-size: 13px;
-    color: #92400e;
-    margin-bottom: 1rem;
-    display: flex;
-    align-items: flex-start;
-    gap: 8px;
-  }
-
-  /* LOADING */
-  .spinner {
-    width: 18px;
-    height: 18px;
-    border: 2px solid rgba(255,255,255,0.3);
-    border-top-color: #fff;
-    border-radius: 50%;
-    animation: spin 0.7s linear infinite;
-    display: none;
-    margin: 0 auto;
-  }
-
-  @keyframes spin { to { transform: rotate(360deg); } }
-
-  .divider {
-    border: none;
-    border-top: 0.5px solid var(--border);
-    margin: 1rem 0;
-  }
-
-  .hint { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
+/* CLOUDINARY URL display */
+#cloudinary-result { display: none; }
+.url-box { background: var(--surface2); border: 0.5px solid var(--border); border-radius: var(--radius); padding: 10px 12px; font-size: 12px; font-family: monospace; color: var(--text-muted); word-break: break-all; margin-top: 8px; }
 </style>
 </head>
 <body>
@@ -423,13 +166,13 @@
     <h1>Quiz Admin</h1>
     <p>Devam etmek için şifrenizi girin.</p>
     <div class="field">
-      <label for="pass-input">Şifre</label>
+      <label>Şifre</label>
       <input type="password" id="pass-input" placeholder="••••••••" autofocus>
     </div>
     <div style="margin-top: 1rem;">
       <button class="btn btn-primary btn-lg" onclick="checkPassword()">Giriş yap</button>
     </div>
-    <p id="login-error" style="color: var(--danger); font-size: 13px; margin-top: 10px; display: none;">Yanlış şifre.</p>
+    <p id="login-error" style="color:var(--danger);font-size:13px;margin-top:10px;display:none;">Yanlış şifre.</p>
   </div>
 </div>
 
@@ -438,22 +181,18 @@
   <header>
     <h1>Quiz Admin</h1>
     <div class="header-right">
-      <span id="conn-status" style="font-size: 12px; color: var(--text-muted);">Firebase bağlanıyor…</span>
+      <span id="conn-status" style="font-size:12px;color:var(--text-muted);">Bağlanıyor…</span>
       <button class="btn btn-sm btn-danger" onclick="logout()">Çıkış</button>
     </div>
   </header>
 
   <main>
 
-    <!-- FIREBASE CONFIG WARNING -->
-    <div id="config-warning" class="setup-notice" style="display:none;">
-      ⚠️ Firebase config girilmedi. Aşağıdan kaydet butonuna basarak config'i ekleyin.
-    </div>
-
-    <!-- FIREBASE CONFIG -->
-    <details id="config-section" style="margin-bottom: 1rem;">
-      <summary style="cursor: pointer; font-size: 14px; font-weight: 500; padding: 12px 0; color: var(--text-muted);">⚙️ Firebase Ayarları</summary>
-      <div class="card" style="margin-top: 8px;">
+    <!-- AYARLAR -->
+    <details id="config-section" style="margin-bottom:1rem;">
+      <summary style="cursor:pointer;font-size:14px;font-weight:500;padding:12px 0;color:var(--text-muted);">⚙️ Bağlantı Ayarları</summary>
+      <div class="card" style="margin-top:8px;">
+        <div class="card-title">Firebase</div>
         <div class="field-row">
           <div class="field">
             <label>API Key</label>
@@ -468,20 +207,117 @@
           <label>Project ID</label>
           <input type="text" id="fb-projectId" placeholder="my-quiz-app">
         </div>
-        <div style="margin-top: 1rem; display: flex; gap: 10px;">
-          <button class="btn btn-primary" onclick="saveFirebaseConfig()">Kaydet ve bağlan</button>
-          <button class="btn" onclick="clearFirebaseConfig()">Temizle</button>
+        <hr class="divider">
+        <div class="card-title">Cloudinary</div>
+        <div class="field-row">
+          <div class="field">
+            <label>Cloud Name</label>
+            <input type="text" id="cl-cloudName" placeholder="dxyz1234">
+          </div>
+          <div class="field">
+            <label>Upload Preset</label>
+            <input type="text" id="cl-preset" placeholder="quiz_uploads">
+            <div class="hint">Unsigned preset olmalı</div>
+          </div>
+        </div>
+        <div style="margin-top:1rem;display:flex;gap:10px;">
+          <button class="btn btn-primary" onclick="saveAllConfig()">Kaydet</button>
+          <button class="btn btn-danger" onclick="clearAllConfig()">Temizle</button>
         </div>
       </div>
     </details>
 
-    <!-- SORU FORMU -->
-    <div class="card">
-      <div class="card-title">Yeni soru ekle</div>
+    <!-- ADIM GÖSTERGESİ -->
+    <div class="steps">
+      <div class="step active" id="step-ind-1"><div class="step-num">1</div>Görsel</div>
+      <div class="step-line"></div>
+      <div class="step" id="step-ind-2"><div class="step-num">2</div>Sıkıştır</div>
+      <div class="step-line"></div>
+      <div class="step" id="step-ind-3"><div class="step-num">3</div>Cloudinary</div>
+      <div class="step-line"></div>
+      <div class="step" id="step-ind-4"><div class="step-num">4</div>Soru & Kaydet</div>
+    </div>
+
+    <!-- ADIM 1: GÖRSEL YÜKLE -->
+    <div class="card" id="step1-card">
+      <div class="card-title">1 — Görsel seç</div>
+      <div class="upload-zone" id="upload-zone">
+        <input type="file" accept="image/*" id="file-input" onchange="handleFile(this.files[0])">
+        <div class="upload-icon">🖼️</div>
+        <div class="upload-text">Görseli buraya sürükle veya tıkla</div>
+        <div class="upload-sub">JPG, PNG, WEBP desteklenir</div>
+      </div>
+    </div>
+
+    <!-- ADIM 2: SIKIŞTIRICA -->
+    <div id="compress-panel">
+      <div class="card">
+        <div class="card-title">2 — Sıkıştır</div>
+
+        <div class="img-compare">
+          <div class="img-box">
+            <div class="img-box-label">
+              Orijinal
+              <span class="size-badge size-warn" id="orig-size">—</span>
+            </div>
+            <img id="orig-img" src="" alt="Orijinal">
+          </div>
+          <div class="img-box">
+            <div class="img-box-label">
+              Sıkıştırılmış
+              <span class="size-badge size-ok" id="comp-size">—</span>
+            </div>
+            <img id="comp-img" src="" alt="Sıkıştırılmış">
+          </div>
+        </div>
+
+        <div class="slider-row">
+          <label>Kalite</label>
+          <input type="range" id="quality-slider" min="20" max="95" value="75" step="5" oninput="recompress()">
+          <span class="slider-val" id="quality-val">75%</span>
+        </div>
+        <div class="slider-row">
+          <label>Maks. genişlik</label>
+          <input type="range" id="width-slider" min="400" max="2000" value="1200" step="100" oninput="recompress()">
+          <span class="slider-val" id="width-val">1200px</span>
+        </div>
+
+        <div style="display:flex;gap:10px;margin-top:1rem;">
+          <button class="btn" onclick="resetUpload()">← Başka görsel seç</button>
+          <button class="btn btn-primary" style="flex:1;" onclick="uploadToCloudinary()" id="upload-btn">
+            <span id="upload-label">Cloudinary'ye yükle →</span>
+            <div class="spinner" id="upload-spinner"></div>
+          </button>
+        </div>
+        <div class="progress-bar" id="upload-progress-bar" style="display:none;">
+          <div class="progress-fill" id="upload-progress-fill"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ADIM 3: CLOUDINARY SONUÇ -->
+    <div id="cloudinary-result">
+      <div class="card">
+        <div class="card-title">3 — Cloudinary'ye yüklendi</div>
+        <div class="status-row success">✓ Görsel başarıyla yüklendi</div>
+        <div style="display:flex;align-items:center;gap:12px;">
+          <img id="uploaded-thumb" src="" alt="" style="width:80px;height:60px;object-fit:cover;border-radius:var(--radius);border:0.5px solid var(--border);">
+          <div style="flex:1;min-width:0;">
+            <div style="font-size:12px;color:var(--text-muted);margin-bottom:4px;">Cloudinary URL</div>
+            <div class="url-box" id="cloudinary-url-box">—</div>
+          </div>
+        </div>
+        <button class="btn btn-sm" style="margin-top:10px;" onclick="resetUpload()">Başka görsel yükle</button>
+      </div>
+    </div>
+
+    <!-- ADIM 4: SORU FORMU -->
+    <div class="card" id="question-card">
+      <div class="card-title">4 — Soru bilgileri</div>
 
       <div class="field-row">
         <div class="field">
-          <label for="sel-category">Kategori</label>
+          <label>Kategori</label>
           <select id="sel-category">
             <option value="tarih_questions">🏛️ Tarih</option>
             <option value="sinema_questions">🎬 Sinema</option>
@@ -495,7 +331,7 @@
           </select>
         </div>
         <div class="field">
-          <label for="sel-points">Puan</label>
+          <label>Puan</label>
           <select id="sel-points">
             <option value="1">1 puan</option>
             <option value="2" selected>2 puan</option>
@@ -506,57 +342,39 @@
       </div>
 
       <div class="field">
-        <label for="inp-question">Soru metni</label>
+        <label>Soru metni</label>
         <textarea id="inp-question" placeholder="Bu görsel hangi şehre aittir?"></textarea>
       </div>
 
       <div class="field">
-        <label for="inp-image">Görsel URL (Cloudinary)</label>
-        <input type="url" id="inp-image" placeholder="https://res.cloudinary.com/..." oninput="previewImage(this.value)">
-        <div class="hint">Cloudinary URL'sini yapıştırın.</div>
-        <div class="image-preview" id="img-preview">
-          <img id="preview-img" src="" alt="Önizleme" onerror="this.parentElement.style.display='none'">
-        </div>
+        <label>Görsel URL</label>
+        <input type="url" id="inp-image" placeholder="Cloudinary yüklemesi yapınca otomatik dolar" readonly style="color:var(--text-muted);background:var(--surface2);">
+        <div class="hint">Cloudinary'ye yükleme yapınca burası otomatik dolar. Manuel de girebilirsin.</div>
       </div>
     </div>
 
     <!-- ŞIKLAR -->
     <div class="card">
       <div class="card-title">Şıklar</div>
-
-      <div class="options-grid" id="options-grid">
+      <div class="options-grid">
         <div class="option-item" id="opt-a">
-          <div class="option-header">
-            <div class="option-badge">A</div>
-            <span class="option-label">A şıkkı</span>
-          </div>
+          <div class="option-header"><div class="option-badge">A</div><span class="option-label">A şıkkı</span></div>
           <input type="text" id="opt-a-text" placeholder="Seçenek A">
         </div>
         <div class="option-item" id="opt-b">
-          <div class="option-header">
-            <div class="option-badge">B</div>
-            <span class="option-label">B şıkkı</span>
-          </div>
+          <div class="option-header"><div class="option-badge">B</div><span class="option-label">B şıkkı</span></div>
           <input type="text" id="opt-b-text" placeholder="Seçenek B">
         </div>
         <div class="option-item" id="opt-c">
-          <div class="option-header">
-            <div class="option-badge">C</div>
-            <span class="option-label">C şıkkı</span>
-          </div>
+          <div class="option-header"><div class="option-badge">C</div><span class="option-label">C şıkkı</span></div>
           <input type="text" id="opt-c-text" placeholder="Seçenek C">
         </div>
         <div class="option-item" id="opt-d">
-          <div class="option-header">
-            <div class="option-badge">D</div>
-            <span class="option-label">D şıkkı</span>
-          </div>
+          <div class="option-header"><div class="option-badge">D</div><span class="option-label">D şıkkı</span></div>
           <input type="text" id="opt-d-text" placeholder="Seçenek D">
         </div>
       </div>
-
       <hr class="divider">
-
       <div class="field">
         <label>Doğru şık</label>
         <div class="correct-selector">
@@ -569,22 +387,20 @@
     </div>
 
     <!-- KAYDET -->
-    <button class="btn btn-primary btn-lg" onclick="submitQuestion()" id="submit-btn">
+    <button class="btn btn-success btn-lg" onclick="submitQuestion()" id="submit-btn">
       <span id="submit-label">Firebase'e kaydet</span>
       <div class="spinner" id="submit-spinner"></div>
     </button>
 
-    <hr class="divider" style="margin: 1.5rem 0;">
+    <hr class="divider" style="margin:1.5rem 0;">
 
     <!-- SON EKLENENLER -->
     <div class="card">
-      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;">
-        <div class="card-title" style="margin-bottom: 0;">Bu oturumda eklenenler</div>
-        <span id="recent-count" style="font-size: 12px; color: var(--text-muted);">0 soru</span>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;">
+        <div class="card-title" style="margin-bottom:0;">Bu oturumda eklenenler</div>
+        <span id="recent-count" style="font-size:12px;color:var(--text-muted);">0 soru</span>
       </div>
-      <div id="recent-list">
-        <p style="font-size: 13px; color: var(--text-muted);">Henüz soru eklenmedi.</p>
-      </div>
+      <div id="recent-list"><p style="font-size:13px;color:var(--text-muted);">Henüz soru eklenmedi.</p></div>
     </div>
 
   </main>
@@ -593,229 +409,337 @@
 <div id="toast"></div>
 
 <script type="module">
-  import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
-  import { getFirestore, collection, addDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import { getFirestore, collection, addDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
 
-  // ── CONFIG ─────────────────────────────────────────────────────────────────
+// ── CONSTANTS ──────────────────────────────────────────────────────────────
+const ADMIN_PASSWORD = "quiz2025"; // Buradan değiştir
+const TARGET_KB = 75; // hedef dosya boyutu
 
-  const ADMIN_PASSWORD = "quiz2025"; // <-- Şifreyi buradan değiştir
+// ── STATE ──────────────────────────────────────────────────────────────────
+let db = null;
+let cloudinaryConfig = { cloudName: '', preset: '' };
+let selectedCorrect = null;
+let recentQuestions = [];
+let originalFile = null;
+let compressedBlob = null;
+let compressTimer = null;
 
-  let db = null;
-  let selectedCorrect = null;
-  let recentQuestions = [];
-
-  // ── AUTH ───────────────────────────────────────────────────────────────────
-
-  window.checkPassword = function() {
-    const val = document.getElementById('pass-input').value;
-    if (val === ADMIN_PASSWORD) {
-      document.getElementById('login-screen').style.display = 'none';
-      document.getElementById('app').style.display = 'block';
-      loadFirebaseConfig();
-    } else {
-      document.getElementById('login-error').style.display = 'block';
-      document.getElementById('pass-input').value = '';
-      document.getElementById('pass-input').focus();
-    }
-  }
-
-  document.getElementById('pass-input').addEventListener('keydown', e => {
-    if (e.key === 'Enter') window.checkPassword();
-  });
-
-  window.logout = function() {
-    document.getElementById('login-screen').style.display = 'flex';
-    document.getElementById('app').style.display = 'none';
+// ── AUTH ───────────────────────────────────────────────────────────────────
+window.checkPassword = function() {
+  if (document.getElementById('pass-input').value === ADMIN_PASSWORD) {
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+    loadAllConfig();
+  } else {
+    document.getElementById('login-error').style.display = 'block';
     document.getElementById('pass-input').value = '';
+    document.getElementById('pass-input').focus();
   }
+};
+document.getElementById('pass-input').addEventListener('keydown', e => { if (e.key==='Enter') window.checkPassword(); });
+window.logout = function() {
+  document.getElementById('login-screen').style.display = 'flex';
+  document.getElementById('app').style.display = 'none';
+};
 
-  // ── FIREBASE CONFIG ────────────────────────────────────────────────────────
+// ── CONFIG ─────────────────────────────────────────────────────────────────
+function loadAllConfig() {
+  const fb = JSON.parse(localStorage.getItem('quiz_fb_config') || '{}');
+  const cl = JSON.parse(localStorage.getItem('quiz_cl_config') || '{}');
+  document.getElementById('fb-apiKey').value = fb.apiKey || '';
+  document.getElementById('fb-authDomain').value = fb.authDomain || '';
+  document.getElementById('fb-projectId').value = fb.projectId || '';
+  document.getElementById('cl-cloudName').value = cl.cloudName || '';
+  document.getElementById('cl-preset').value = cl.preset || '';
+  if (fb.apiKey && fb.projectId) connectFirebase(fb);
+  if (cl.cloudName && cl.preset) { cloudinaryConfig = cl; }
+}
 
-  function loadFirebaseConfig() {
-    const saved = localStorage.getItem('quiz_fb_config');
-    if (saved) {
-      const cfg = JSON.parse(saved);
-      document.getElementById('fb-apiKey').value = cfg.apiKey || '';
-      document.getElementById('fb-authDomain').value = cfg.authDomain || '';
-      document.getElementById('fb-projectId').value = cfg.projectId || '';
-      connectFirebase(cfg);
-    } else {
-      document.getElementById('config-warning').style.display = 'flex';
-      document.getElementById('config-section').open = true;
-      setStatus('Firebase bağlı değil', false);
-    }
-  }
-
-  window.saveFirebaseConfig = function() {
-    const cfg = {
-      apiKey: document.getElementById('fb-apiKey').value.trim(),
-      authDomain: document.getElementById('fb-authDomain').value.trim(),
-      projectId: document.getElementById('fb-projectId').value.trim(),
-    };
-    if (!cfg.apiKey || !cfg.projectId) {
-      showToast('API Key ve Project ID zorunlu.', 'error');
-      return;
-    }
-    localStorage.setItem('quiz_fb_config', JSON.stringify(cfg));
-    document.getElementById('config-warning').style.display = 'none';
-    connectFirebase(cfg);
-  }
-
-  window.clearFirebaseConfig = function() {
-    localStorage.removeItem('quiz_fb_config');
-    db = null;
-    setStatus('Firebase bağlı değil', false);
-    showToast('Config temizlendi.');
-  }
-
-  function connectFirebase(cfg) {
-    try {
-      const app = initializeApp(cfg, 'quiz-admin-' + Date.now());
-      db = getFirestore(app);
-      setStatus('Firebase bağlı ✓', true);
-      document.getElementById('config-warning').style.display = 'none';
-    } catch (e) {
-      setStatus('Bağlantı hatası', false);
-      showToast('Firebase başlatılamadı: ' + e.message, 'error');
-    }
-  }
-
-  function setStatus(text, ok) {
-    const el = document.getElementById('conn-status');
-    el.textContent = text;
-    el.style.color = ok ? 'var(--success)' : 'var(--danger)';
-  }
-
-  // ── CORRECT OPTION ─────────────────────────────────────────────────────────
-
-  window.selectCorrect = function(id) {
-    selectedCorrect = id;
-    ['a','b','c','d'].forEach(x => {
-      const btn = document.getElementById('cbtn-' + x);
-      const opt = document.getElementById('opt-' + x);
-      btn.classList.toggle('active', x === id);
-      opt.classList.toggle('correct', x === id);
-    });
-  }
-
-  // ── IMAGE PREVIEW ──────────────────────────────────────────────────────────
-
-  window.previewImage = function(url) {
-    const wrap = document.getElementById('img-preview');
-    const img = document.getElementById('preview-img');
-    if (url.startsWith('http')) {
-      img.src = url;
-      wrap.style.display = 'block';
-    } else {
-      wrap.style.display = 'none';
-    }
-  }
-
-  // ── SUBMIT ─────────────────────────────────────────────────────────────────
-
-  window.submitQuestion = async function() {
-    if (!db) { showToast('Önce Firebase config girin.', 'error'); return; }
-
-    const question = document.getElementById('inp-question').value.trim();
-    const imageUrl = document.getElementById('inp-image').value.trim();
-    const category = document.getElementById('sel-category').value;
-    const points = parseInt(document.getElementById('sel-points').value);
-    const options = ['a','b','c','d'].map(id => ({
-      id,
-      text: document.getElementById('opt-' + id + '-text').value.trim()
-    }));
-
-    if (!question) { showToast('Soru metni boş olamaz.', 'error'); return; }
-    if (!imageUrl) { showToast('Görsel URL boş olamaz.', 'error'); return; }
-    if (options.some(o => !o.text)) { showToast('Tüm şıkları doldurun.', 'error'); return; }
-    if (!selectedCorrect) { showToast('Doğru şıkkı seçin.', 'error'); return; }
-
-    setLoading(true);
-
-    try {
-      const docData = {
-        type: "image",
-        question,
-        hintImageUrl: imageUrl,
-        correctOptionId: selectedCorrect,
-        options,
-        points,
-        isActive: true,
-        createdAt: serverTimestamp(),
-      };
-
-      const ref = await addDoc(collection(db, category), docData);
-
-      recentQuestions.unshift({ id: ref.id, question, imageUrl, category, correctOptionId: selectedCorrect });
-      renderRecent();
-      resetForm();
-      showToast('Soru eklendi!', 'success');
-    } catch (e) {
-      showToast('Hata: ' + e.message, 'error');
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  function setLoading(on) {
-    document.getElementById('submit-label').style.display = on ? 'none' : 'inline';
-    document.getElementById('submit-spinner').style.display = on ? 'block' : 'none';
-    document.getElementById('submit-btn').disabled = on;
-  }
-
-  function resetForm() {
-    document.getElementById('inp-question').value = '';
-    document.getElementById('inp-image').value = '';
-    document.getElementById('img-preview').style.display = 'none';
-    ['a','b','c','d'].forEach(id => {
-      document.getElementById('opt-' + id + '-text').value = '';
-      document.getElementById('opt-' + id).classList.remove('correct');
-      document.getElementById('cbtn-' + id).classList.remove('active');
-    });
-    selectedCorrect = null;
-    document.getElementById('inp-question').focus();
-  }
-
-  // ── RECENT ─────────────────────────────────────────────────────────────────
-
-  const catLabels = {
-    tarih_questions: 'Tarih', sinema_questions: 'Sinema', bilim_questions: 'Bilim',
-    din_questions: 'Din', dizi_questions: 'Dizi', spor_questions: 'Spor',
-    sosyalmedya_questions: 'Sosyal Medya', siyaset_questions: 'Siyaset',
-    infinity_questions: 'Infinity'
+window.saveAllConfig = function() {
+  const fb = {
+    apiKey: document.getElementById('fb-apiKey').value.trim(),
+    authDomain: document.getElementById('fb-authDomain').value.trim(),
+    projectId: document.getElementById('fb-projectId').value.trim(),
   };
+  const cl = {
+    cloudName: document.getElementById('cl-cloudName').value.trim(),
+    preset: document.getElementById('cl-preset').value.trim(),
+  };
+  if (!fb.apiKey || !fb.projectId) { showToast('Firebase API Key ve Project ID zorunlu.', 'error'); return; }
+  if (!cl.cloudName || !cl.preset) { showToast('Cloudinary Cloud Name ve Preset zorunlu.', 'error'); return; }
+  localStorage.setItem('quiz_fb_config', JSON.stringify(fb));
+  localStorage.setItem('quiz_cl_config', JSON.stringify(cl));
+  cloudinaryConfig = cl;
+  connectFirebase(fb);
+  showToast('Ayarlar kaydedildi.', 'success');
+  document.getElementById('config-section').open = false;
+};
 
-  function renderRecent() {
-    const el = document.getElementById('recent-list');
-    document.getElementById('recent-count').textContent = recentQuestions.length + ' soru';
-    if (recentQuestions.length === 0) {
-      el.innerHTML = '<p style="font-size: 13px; color: var(--text-muted);">Henüz soru eklenmedi.</p>';
-      return;
-    }
-    el.innerHTML = recentQuestions.slice(0, 10).map(q => `
-      <div class="recent-item">
-        <img class="recent-thumb" src="${q.imageUrl}" alt="" onerror="this.style.opacity=0.3">
-        <div class="recent-info">
-          <div class="recent-q">${q.question}</div>
-          <div class="recent-meta">
-            <span class="badge">${catLabels[q.category] || q.category}</span>
-            &nbsp;Doğru: <strong>${q.correctOptionId.toUpperCase()}</strong>
-            &nbsp;· ID: <code style="font-size:11px">${q.id}</code>
-          </div>
+window.clearAllConfig = function() {
+  localStorage.removeItem('quiz_fb_config');
+  localStorage.removeItem('quiz_cl_config');
+  db = null; cloudinaryConfig = { cloudName:'', preset:'' };
+  setStatus('Bağlı değil', false);
+  showToast('Config temizlendi.');
+};
+
+function connectFirebase(cfg) {
+  try {
+    const app = initializeApp(cfg, 'quiz-admin-' + Date.now());
+    db = getFirestore(app);
+    setStatus('Firebase bağlı ✓', true);
+  } catch(e) {
+    setStatus('Bağlantı hatası', false);
+    showToast('Firebase: ' + e.message, 'error');
+  }
+}
+
+function setStatus(text, ok) {
+  const el = document.getElementById('conn-status');
+  el.textContent = text;
+  el.style.color = ok ? 'var(--success)' : 'var(--danger)';
+}
+
+// ── DRAG & DROP ────────────────────────────────────────────────────────────
+const zone = document.getElementById('upload-zone');
+zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('dragging'); });
+zone.addEventListener('dragleave', () => zone.classList.remove('dragging'));
+zone.addEventListener('drop', e => {
+  e.preventDefault(); zone.classList.remove('dragging');
+  const f = e.dataTransfer.files[0];
+  if (f && f.type.startsWith('image/')) handleFile(f);
+});
+
+// ── FILE HANDLING ──────────────────────────────────────────────────────────
+window.handleFile = function(file) {
+  if (!file) return;
+  originalFile = file;
+  const reader = new FileReader();
+  reader.onload = e => {
+    document.getElementById('orig-img').src = e.target.result;
+    document.getElementById('orig-size').textContent = formatSize(file.size);
+    document.getElementById('compress-panel').style.display = 'block';
+    document.getElementById('step1-card').style.display = 'none';
+    setStepDone(1); setStepActive(2);
+    recompress();
+  };
+  reader.readAsDataURL(file);
+};
+
+window.resetUpload = function() {
+  originalFile = null; compressedBlob = null;
+  document.getElementById('file-input').value = '';
+  document.getElementById('compress-panel').style.display = 'none';
+  document.getElementById('cloudinary-result').style.display = 'none';
+  document.getElementById('step1-card').style.display = 'block';
+  document.getElementById('inp-image').value = '';
+  document.getElementById('inp-image').readOnly = true;
+  document.getElementById('inp-image').style.background = 'var(--surface2)';
+  document.getElementById('inp-image').style.color = 'var(--text-muted)';
+  setStepActive(1); resetStep(2); resetStep(3);
+};
+
+// ── COMPRESSION ────────────────────────────────────────────────────────────
+window.recompress = function() {
+  clearTimeout(compressTimer);
+  const qval = document.getElementById('quality-slider').value;
+  const wval = document.getElementById('width-slider').value;
+  document.getElementById('quality-val').textContent = qval + '%';
+  document.getElementById('width-val').textContent = wval + 'px';
+  compressTimer = setTimeout(() => compress(parseInt(qval)/100, parseInt(wval)), 150);
+};
+
+function compress(quality, maxWidth) {
+  if (!originalFile) return;
+  const img = new Image();
+  img.onload = () => {
+    let w = img.width, h = img.height;
+    if (w > maxWidth) { h = Math.round(h * maxWidth / w); w = maxWidth; }
+    const canvas = document.createElement('canvas');
+    canvas.width = w; canvas.height = h;
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(img, 0, 0, w, h);
+    canvas.toBlob(blob => {
+      compressedBlob = blob;
+      const url = URL.createObjectURL(blob);
+      document.getElementById('comp-img').src = url;
+      const sz = blob.size;
+      const el = document.getElementById('comp-size');
+      el.textContent = formatSize(sz);
+      el.className = 'size-badge ' + (sz < TARGET_KB*1024 ? 'size-ok' : 'size-warn');
+    }, 'image/jpeg', quality);
+  };
+  img.src = URL.createObjectURL(originalFile);
+}
+
+// ── CLOUDINARY UPLOAD ──────────────────────────────────────────────────────
+window.uploadToCloudinary = async function() {
+  if (!compressedBlob) { showToast('Önce görsel seçin.', 'error'); return; }
+  if (!cloudinaryConfig.cloudName || !cloudinaryConfig.preset) {
+    showToast('Cloudinary ayarlarını girin.', 'error');
+    document.getElementById('config-section').open = true;
+    return;
+  }
+
+  setUploadLoading(true);
+  document.getElementById('upload-progress-bar').style.display = 'block';
+
+  const fd = new FormData();
+  fd.append('file', compressedBlob, 'quiz-image.jpg');
+  fd.append('upload_preset', cloudinaryConfig.preset);
+
+  try {
+    const xhr = new XMLHttpRequest();
+    xhr.upload.onprogress = e => {
+      if (e.lengthComputable) {
+        const pct = Math.round(e.loaded / e.total * 100);
+        document.getElementById('upload-progress-fill').style.width = pct + '%';
+      }
+    };
+
+    const result = await new Promise((resolve, reject) => {
+      xhr.onload = () => {
+        if (xhr.status === 200) resolve(JSON.parse(xhr.responseText));
+        else reject(new Error('Yükleme başarısız: ' + xhr.status));
+      };
+      xhr.onerror = () => reject(new Error('Ağ hatası'));
+      xhr.open('POST', `https://api.cloudinary.com/v1_1/${cloudinaryConfig.cloudName}/image/upload`);
+      xhr.send(fd);
+    });
+
+    const url = result.secure_url;
+    document.getElementById('inp-image').value = url;
+    document.getElementById('inp-image').readOnly = false;
+    document.getElementById('inp-image').style.background = '';
+    document.getElementById('inp-image').style.color = '';
+    document.getElementById('cloudinary-url-box').textContent = url;
+    document.getElementById('uploaded-thumb').src = url;
+    document.getElementById('cloudinary-result').style.display = 'block';
+    document.getElementById('compress-panel').style.display = 'none';
+    setStepDone(2); setStepDone(3); setStepActive(4);
+    showToast('Cloudinary\'ye yüklendi!', 'success');
+  } catch(e) {
+    showToast('Cloudinary hatası: ' + e.message, 'error');
+  } finally {
+    setUploadLoading(false);
+  }
+};
+
+function setUploadLoading(on) {
+  document.getElementById('upload-label').style.display = on ? 'none' : 'inline';
+  document.getElementById('upload-spinner').style.display = on ? 'block' : 'none';
+  document.getElementById('upload-btn').disabled = on;
+}
+
+// ── FIREBASE SUBMIT ────────────────────────────────────────────────────────
+window.submitQuestion = async function() {
+  if (!db) { showToast('Firebase bağlı değil.', 'error'); return; }
+
+  const question = document.getElementById('inp-question').value.trim();
+  const imageUrl = document.getElementById('inp-image').value.trim();
+  const category = document.getElementById('sel-category').value;
+  const points = parseInt(document.getElementById('sel-points').value);
+  const options = ['a','b','c','d'].map(id => ({
+    id, text: document.getElementById('opt-' + id + '-text').value.trim()
+  }));
+
+  if (!question) { showToast('Soru metni boş olamaz.', 'error'); return; }
+  if (!imageUrl) { showToast('Görsel URL boş. Önce Cloudinary\'ye yükle.', 'error'); return; }
+  if (options.some(o => !o.text)) { showToast('Tüm şıkları doldurun.', 'error'); return; }
+  if (!selectedCorrect) { showToast('Doğru şıkkı seçin.', 'error'); return; }
+
+  setSaveLoading(true);
+  try {
+    const ref = await addDoc(collection(db, category), {
+      type: 'image', question, hintImageUrl: imageUrl,
+      correctOptionId: selectedCorrect, options, points,
+      isActive: true, createdAt: serverTimestamp(),
+    });
+    recentQuestions.unshift({ id: ref.id, question, imageUrl, category, correctOptionId: selectedCorrect });
+    renderRecent();
+    resetForm();
+    showToast('Soru eklendi! ✓', 'success');
+  } catch(e) {
+    showToast('Hata: ' + e.message, 'error');
+  } finally {
+    setSaveLoading(false);
+  }
+};
+
+function setSaveLoading(on) {
+  document.getElementById('submit-label').style.display = on ? 'none' : 'inline';
+  document.getElementById('submit-spinner').style.display = on ? 'block' : 'none';
+  document.getElementById('submit-btn').disabled = on;
+}
+
+function resetForm() {
+  window.resetUpload();
+  document.getElementById('inp-question').value = '';
+  ['a','b','c','d'].forEach(id => {
+    document.getElementById('opt-'+id+'-text').value = '';
+    document.getElementById('opt-'+id).classList.remove('correct');
+    document.getElementById('cbtn-'+id).classList.remove('active');
+  });
+  selectedCorrect = null;
+  resetStep(4); setStepActive(1);
+}
+
+// ── CORRECT OPTION ─────────────────────────────────────────────────────────
+window.selectCorrect = function(id) {
+  selectedCorrect = id;
+  ['a','b','c','d'].forEach(x => {
+    document.getElementById('cbtn-'+x).classList.toggle('active', x===id);
+    document.getElementById('opt-'+x).classList.toggle('correct', x===id);
+  });
+};
+
+// ── STEP INDICATORS ────────────────────────────────────────────────────────
+function setStepActive(n) { document.getElementById('step-ind-'+n).className = 'step active'; }
+function setStepDone(n) { document.getElementById('step-ind-'+n).className = 'step done'; }
+function resetStep(n) { document.getElementById('step-ind-'+n).className = 'step'; }
+
+// ── RECENT ─────────────────────────────────────────────────────────────────
+const catLabels = {
+  tarih_questions:'Tarih', sinema_questions:'Sinema', bilim_questions:'Bilim',
+  din_questions:'Din', dizi_questions:'Dizi', spor_questions:'Spor',
+  sosyalmedya_questions:'Sosyal Medya', siyaset_questions:'Siyaset', infinity_questions:'Infinity'
+};
+
+function renderRecent() {
+  const el = document.getElementById('recent-list');
+  document.getElementById('recent-count').textContent = recentQuestions.length + ' soru';
+  if (!recentQuestions.length) {
+    el.innerHTML = '<p style="font-size:13px;color:var(--text-muted);">Henüz soru eklenmedi.</p>';
+    return;
+  }
+  el.innerHTML = recentQuestions.slice(0,10).map(q => `
+    <div class="recent-item">
+      <img class="recent-thumb" src="${q.imageUrl}" alt="" onerror="this.style.opacity=0.2">
+      <div class="recent-info">
+        <div class="recent-q">${q.question}</div>
+        <div class="recent-meta">
+          <span class="badge">${catLabels[q.category]||q.category}</span>
+          &nbsp;Doğru: <strong>${q.correctOptionId.toUpperCase()}</strong>
+          &nbsp;· <code style="font-size:11px">${q.id}</code>
         </div>
       </div>
-    `).join('');
-  }
+    </div>`).join('');
+}
 
-  // ── TOAST ──────────────────────────────────────────────────────────────────
+// ── HELPERS ────────────────────────────────────────────────────────────────
+function formatSize(bytes) {
+  if (bytes < 1024) return bytes + ' B';
+  if (bytes < 1024*1024) return (bytes/1024).toFixed(1) + ' KB';
+  return (bytes/1024/1024).toFixed(2) + ' MB';
+}
 
-  window.showToast = function(msg, type = '') {
-    const t = document.getElementById('toast');
-    t.textContent = msg;
-    t.className = 'show ' + type;
-    clearTimeout(window._toastTimer);
-    window._toastTimer = setTimeout(() => { t.className = ''; }, 2800);
-  }
+window.showToast = function(msg, type='') {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = 'show ' + type;
+  clearTimeout(window._tt);
+  window._tt = setTimeout(() => { t.className = ''; }, 2800);
+};
 </script>
 </body>
 </html>
