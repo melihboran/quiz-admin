@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quiz Admin Panel</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #f7f6f3;
+    --surface: #ffffff;
+    --surface2: #f0efe9;
+    --border: #e2e0d8;
+    --border-strong: #c8c6bc;
+    --text: #1a1a18;
+    --text-muted: #6b6a64;
+    --accent: #2563eb;
+    --accent-bg: #eff6ff;
+    --accent-border: #bfdbfe;
+    --success: #16a34a;
+    --success-bg: #f0fdf4;
+    --danger: #dc2626;
+    --danger-bg: #fef2f2;
+    --radius: 8px;
+    --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+
+  body {
+    font-family: var(--font);
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    font-size: 15px;
+    line-height: 1.6;
+  }
+
+  /* LOGIN */
+  #login-screen {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+  }
+
+  .login-card {
+    background: var(--surface);
+    border: 0.5px solid var(--border);
+    border-radius: 12px;
+    padding: 2.5rem;
+    width: 100%;
+    max-width: 380px;
+  }
+
+  .login-card h1 {
+    font-size: 20px;
+    font-weight: 500;
+    margin-bottom: 0.25rem;
+  }
+
+  .login-card p {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-bottom: 1.75rem;
+  }
+
+  /* LAYOUT */
+  #app { display: none; min-height: 100vh; }
+
+  header {
+    background: var(--surface);
+    border-bottom: 0.5px solid var(--border);
+    padding: 0 2rem;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+
+  header h1 { font-size: 16px; font-weight: 500; }
+
+  .header-right { display: flex; align-items: center; gap: 12px; }
+
+  main { max-width: 720px; margin: 0 auto; padding: 2rem; }
+
+  /* FORM */
+  .card {
+    background: var(--surface);
+    border: 0.5px solid var(--border);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .card-title {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 1rem;
+  }
+
+  label {
+    display: block;
+    font-size: 13px;
+    font-weight: 500;
+    margin-bottom: 0.4rem;
+    color: var(--text);
+  }
+
+  input[type="text"],
+  input[type="password"],
+  input[type="url"],
+  input[type="number"],
+  select,
+  textarea {
+    width: 100%;
+    padding: 0 12px;
+    height: 36px;
+    border: 0.5px solid var(--border-strong);
+    border-radius: var(--radius);
+    font-family: var(--font);
+    font-size: 14px;
+    color: var(--text);
+    background: var(--surface);
+    outline: none;
+    transition: border-color 0.15s;
+  }
+
+  textarea {
+    height: auto;
+    padding: 10px 12px;
+    resize: vertical;
+    min-height: 72px;
+  }
+
+  input:focus, select:focus, textarea:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
+  }
+
+  .field { margin-bottom: 1rem; }
+  .field:last-child { margin-bottom: 0; }
+
+  .field-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  /* OPTIONS */
+  .options-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .option-item {
+    background: var(--surface2);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 10px 12px;
+  }
+
+  .option-item.correct {
+    background: var(--success-bg);
+    border-color: #86efac;
+  }
+
+  .option-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+  }
+
+  .option-badge {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--border-strong);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--text-muted);
+    flex-shrink: 0;
+  }
+
+  .option-item.correct .option-badge {
+    background: var(--success);
+    color: #fff;
+  }
+
+  .option-label {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-muted);
+  }
+
+  .option-item.correct .option-label {
+    color: var(--success);
+  }
+
+  .option-item input[type="text"] {
+    height: 32px;
+    font-size: 13px;
+  }
+
+  .correct-selector {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .correct-btn {
+    flex: 1;
+    min-width: 60px;
+    height: 34px;
+    border: 0.5px solid var(--border-strong);
+    border-radius: var(--radius);
+    background: var(--surface);
+    font-family: var(--font);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .correct-btn:hover { background: var(--surface2); }
+
+  .correct-btn.active {
+    background: var(--success-bg);
+    border-color: #86efac;
+    color: var(--success);
+  }
+
+  /* IMAGE PREVIEW */
+  .image-preview {
+    margin-top: 10px;
+    border-radius: var(--radius);
+    overflow: hidden;
+    border: 0.5px solid var(--border);
+    display: none;
+    background: var(--surface2);
+  }
+
+  .image-preview img {
+    width: 100%;
+    max-height: 200px;
+    object-fit: cover;
+    display: block;
+  }
+
+  /* BUTTONS */
+  button {
+    font-family: var(--font);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .btn {
+    height: 36px;
+    padding: 0 16px;
+    border-radius: var(--radius);
+    font-size: 14px;
+    font-weight: 500;
+    border: 0.5px solid var(--border-strong);
+    background: var(--surface);
+    color: var(--text);
+  }
+
+  .btn:hover { background: var(--surface2); }
+  .btn:active { transform: scale(0.98); }
+
+  .btn-primary {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+  }
+
+  .btn-primary:hover { background: #1d4ed8; border-color: #1d4ed8; }
+
+  .btn-lg {
+    height: 44px;
+    padding: 0 24px;
+    font-size: 15px;
+    width: 100%;
+  }
+
+  .btn-sm {
+    height: 30px;
+    padding: 0 12px;
+    font-size: 13px;
+  }
+
+  .btn-danger { color: var(--danger); border-color: #fca5a5; }
+  .btn-danger:hover { background: var(--danger-bg); }
+
+  /* TOAST */
+  #toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: var(--text);
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 20px;
+    font-size: 14px;
+    opacity: 0;
+    transition: all 0.25s;
+    pointer-events: none;
+    white-space: nowrap;
+    z-index: 100;
+  }
+
+  #toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  #toast.success { background: var(--success); }
+  #toast.error { background: var(--danger); }
+
+  /* RECENT */
+  .recent-item {
+    padding: 12px 0;
+    border-bottom: 0.5px solid var(--border);
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .recent-item:last-child { border-bottom: none; }
+
+  .recent-thumb {
+    width: 48px;
+    height: 36px;
+    border-radius: 6px;
+    object-fit: cover;
+    background: var(--surface2);
+    border: 0.5px solid var(--border);
+    flex-shrink: 0;
+  }
+
+  .recent-info { flex: 1; min-width: 0; }
+
+  .recent-q {
+    font-size: 13px;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .recent-meta {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 2px;
+  }
+
+  .badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 500;
+    background: var(--accent-bg);
+    color: var(--accent);
+    border: 0.5px solid var(--accent-border);
+  }
+
+  /* FIREBASE SETUP */
+  .setup-notice {
+    background: #fffbeb;
+    border: 0.5px solid #fde68a;
+    border-radius: var(--radius);
+    padding: 12px 16px;
+    font-size: 13px;
+    color: #92400e;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  /* LOADING */
+  .spinner {
+    width: 18px;
+    height: 18px;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    display: none;
+    margin: 0 auto;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .divider {
+    border: none;
+    border-top: 0.5px solid var(--border);
+    margin: 1rem 0;
+  }
+
+  .hint { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="login-card">
+    <h1>Quiz Admin</h1>
+    <p>Devam etmek için şifrenizi girin.</p>
+    <div class="field">
+      <label for="pass-input">Şifre</label>
+      <input type="password" id="pass-input" placeholder="••••••••" autofocus>
+    </div>
+    <div style="margin-top: 1rem;">
+      <button class="btn btn-primary btn-lg" onclick="checkPassword()">Giriş yap</button>
+    </div>
+    <p id="login-error" style="color: var(--danger); font-size: 13px; margin-top: 10px; display: none;">Yanlış şifre.</p>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <header>
+    <h1>Quiz Admin</h1>
+    <div class="header-right">
+      <span id="conn-status" style="font-size: 12px; color: var(--text-muted);">Firebase bağlanıyor…</span>
+      <button class="btn btn-sm btn-danger" onclick="logout()">Çıkış</button>
+    </div>
+  </header>
+
+  <main>
+
+    <!-- FIREBASE CONFIG WARNING -->
+    <div id="config-warning" class="setup-notice" style="display:none;">
+      ⚠️ Firebase config girilmedi. Aşağıdan kaydet butonuna basarak config'i ekleyin.
+    </div>
+
+    <!-- FIREBASE CONFIG -->
+    <details id="config-section" style="margin-bottom: 1rem;">
+      <summary style="cursor: pointer; font-size: 14px; font-weight: 500; padding: 12px 0; color: var(--text-muted);">⚙️ Firebase Ayarları</summary>
+      <div class="card" style="margin-top: 8px;">
+        <div class="field-row">
+          <div class="field">
+            <label>API Key</label>
+            <input type="text" id="fb-apiKey" placeholder="AIzaSy...">
+          </div>
+          <div class="field">
+            <label>Auth Domain</label>
+            <input type="text" id="fb-authDomain" placeholder="app.firebaseapp.com">
+          </div>
+        </div>
+        <div class="field">
+          <label>Project ID</label>
+          <input type="text" id="fb-projectId" placeholder="my-quiz-app">
+        </div>
+        <div style="margin-top: 1rem; display: flex; gap: 10px;">
+          <button class="btn btn-primary" onclick="saveFirebaseConfig()">Kaydet ve bağlan</button>
+          <button class="btn" onclick="clearFirebaseConfig()">Temizle</button>
+        </div>
+      </div>
+    </details>
+
+    <!-- SORU FORMU -->
+    <div class="card">
+      <div class="card-title">Yeni soru ekle</div>
+
+      <div class="field-row">
+        <div class="field">
+          <label for="sel-category">Kategori</label>
+          <select id="sel-category">
+            <option value="tarih_questions">🏛️ Tarih</option>
+            <option value="sinema_questions">🎬 Sinema</option>
+            <option value="bilim_questions">🔬 Bilim</option>
+            <option value="din_questions">🕌 Din</option>
+            <option value="dizi_questions">📺 Dizi</option>
+            <option value="spor_questions">⚽ Spor</option>
+            <option value="sosyalmedya_questions">📱 Sosyal Medya</option>
+            <option value="siyaset_questions">🏛️ Siyaset</option>
+            <option value="infinity_questions">♾️ Infinity</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="sel-points">Puan</label>
+          <select id="sel-points">
+            <option value="1">1 puan</option>
+            <option value="2" selected>2 puan</option>
+            <option value="3">3 puan</option>
+            <option value="5">5 puan</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="inp-question">Soru metni</label>
+        <textarea id="inp-question" placeholder="Bu görsel hangi şehre aittir?"></textarea>
+      </div>
+
+      <div class="field">
+        <label for="inp-image">Görsel URL (Cloudinary)</label>
+        <input type="url" id="inp-image" placeholder="https://res.cloudinary.com/..." oninput="previewImage(this.value)">
+        <div class="hint">Cloudinary URL'sini yapıştırın.</div>
+        <div class="image-preview" id="img-preview">
+          <img id="preview-img" src="" alt="Önizleme" onerror="this.parentElement.style.display='none'">
+        </div>
+      </div>
+    </div>
+
+    <!-- ŞIKLAR -->
+    <div class="card">
+      <div class="card-title">Şıklar</div>
+
+      <div class="options-grid" id="options-grid">
+        <div class="option-item" id="opt-a">
+          <div class="option-header">
+            <div class="option-badge">A</div>
+            <span class="option-label">A şıkkı</span>
+          </div>
+          <input type="text" id="opt-a-text" placeholder="Seçenek A">
+        </div>
+        <div class="option-item" id="opt-b">
+          <div class="option-header">
+            <div class="option-badge">B</div>
+            <span class="option-label">B şıkkı</span>
+          </div>
+          <input type="text" id="opt-b-text" placeholder="Seçenek B">
+        </div>
+        <div class="option-item" id="opt-c">
+          <div class="option-header">
+            <div class="option-badge">C</div>
+            <span class="option-label">C şıkkı</span>
+          </div>
+          <input type="text" id="opt-c-text" placeholder="Seçenek C">
+        </div>
+        <div class="option-item" id="opt-d">
+          <div class="option-header">
+            <div class="option-badge">D</div>
+            <span class="option-label">D şıkkı</span>
+          </div>
+          <input type="text" id="opt-d-text" placeholder="Seçenek D">
+        </div>
+      </div>
+
+      <hr class="divider">
+
+      <div class="field">
+        <label>Doğru şık</label>
+        <div class="correct-selector">
+          <button class="correct-btn" id="cbtn-a" onclick="selectCorrect('a')">A</button>
+          <button class="correct-btn" id="cbtn-b" onclick="selectCorrect('b')">B</button>
+          <button class="correct-btn" id="cbtn-c" onclick="selectCorrect('c')">C</button>
+          <button class="correct-btn" id="cbtn-d" onclick="selectCorrect('d')">D</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- KAYDET -->
+    <button class="btn btn-primary btn-lg" onclick="submitQuestion()" id="submit-btn">
+      <span id="submit-label">Firebase'e kaydet</span>
+      <div class="spinner" id="submit-spinner"></div>
+    </button>
+
+    <hr class="divider" style="margin: 1.5rem 0;">
+
+    <!-- SON EKLENENLER -->
+    <div class="card">
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;">
+        <div class="card-title" style="margin-bottom: 0;">Bu oturumda eklenenler</div>
+        <span id="recent-count" style="font-size: 12px; color: var(--text-muted);">0 soru</span>
+      </div>
+      <div id="recent-list">
+        <p style="font-size: 13px; color: var(--text-muted);">Henüz soru eklenmedi.</p>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<div id="toast"></div>
+
+<script type="module">
+  import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+  import { getFirestore, collection, addDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+
+  // ── CONFIG ─────────────────────────────────────────────────────────────────
+
+  const ADMIN_PASSWORD = "quiz2025"; // <-- Şifreyi buradan değiştir
+
+  let db = null;
+  let selectedCorrect = null;
+  let recentQuestions = [];
+
+  // ── AUTH ───────────────────────────────────────────────────────────────────
+
+  window.checkPassword = function() {
+    const val = document.getElementById('pass-input').value;
+    if (val === ADMIN_PASSWORD) {
+      document.getElementById('login-screen').style.display = 'none';
+      document.getElementById('app').style.display = 'block';
+      loadFirebaseConfig();
+    } else {
+      document.getElementById('login-error').style.display = 'block';
+      document.getElementById('pass-input').value = '';
+      document.getElementById('pass-input').focus();
+    }
+  }
+
+  document.getElementById('pass-input').addEventListener('keydown', e => {
+    if (e.key === 'Enter') window.checkPassword();
+  });
+
+  window.logout = function() {
+    document.getElementById('login-screen').style.display = 'flex';
+    document.getElementById('app').style.display = 'none';
+    document.getElementById('pass-input').value = '';
+  }
+
+  // ── FIREBASE CONFIG ────────────────────────────────────────────────────────
+
+  function loadFirebaseConfig() {
+    const saved = localStorage.getItem('quiz_fb_config');
+    if (saved) {
+      const cfg = JSON.parse(saved);
+      document.getElementById('fb-apiKey').value = cfg.apiKey || '';
+      document.getElementById('fb-authDomain').value = cfg.authDomain || '';
+      document.getElementById('fb-projectId').value = cfg.projectId || '';
+      connectFirebase(cfg);
+    } else {
+      document.getElementById('config-warning').style.display = 'flex';
+      document.getElementById('config-section').open = true;
+      setStatus('Firebase bağlı değil', false);
+    }
+  }
+
+  window.saveFirebaseConfig = function() {
+    const cfg = {
+      apiKey: document.getElementById('fb-apiKey').value.trim(),
+      authDomain: document.getElementById('fb-authDomain').value.trim(),
+      projectId: document.getElementById('fb-projectId').value.trim(),
+    };
+    if (!cfg.apiKey || !cfg.projectId) {
+      showToast('API Key ve Project ID zorunlu.', 'error');
+      return;
+    }
+    localStorage.setItem('quiz_fb_config', JSON.stringify(cfg));
+    document.getElementById('config-warning').style.display = 'none';
+    connectFirebase(cfg);
+  }
+
+  window.clearFirebaseConfig = function() {
+    localStorage.removeItem('quiz_fb_config');
+    db = null;
+    setStatus('Firebase bağlı değil', false);
+    showToast('Config temizlendi.');
+  }
+
+  function connectFirebase(cfg) {
+    try {
+      const app = initializeApp(cfg, 'quiz-admin-' + Date.now());
+      db = getFirestore(app);
+      setStatus('Firebase bağlı ✓', true);
+      document.getElementById('config-warning').style.display = 'none';
+    } catch (e) {
+      setStatus('Bağlantı hatası', false);
+      showToast('Firebase başlatılamadı: ' + e.message, 'error');
+    }
+  }
+
+  function setStatus(text, ok) {
+    const el = document.getElementById('conn-status');
+    el.textContent = text;
+    el.style.color = ok ? 'var(--success)' : 'var(--danger)';
+  }
+
+  // ── CORRECT OPTION ─────────────────────────────────────────────────────────
+
+  window.selectCorrect = function(id) {
+    selectedCorrect = id;
+    ['a','b','c','d'].forEach(x => {
+      const btn = document.getElementById('cbtn-' + x);
+      const opt = document.getElementById('opt-' + x);
+      btn.classList.toggle('active', x === id);
+      opt.classList.toggle('correct', x === id);
+    });
+  }
+
+  // ── IMAGE PREVIEW ──────────────────────────────────────────────────────────
+
+  window.previewImage = function(url) {
+    const wrap = document.getElementById('img-preview');
+    const img = document.getElementById('preview-img');
+    if (url.startsWith('http')) {
+      img.src = url;
+      wrap.style.display = 'block';
+    } else {
+      wrap.style.display = 'none';
+    }
+  }
+
+  // ── SUBMIT ─────────────────────────────────────────────────────────────────
+
+  window.submitQuestion = async function() {
+    if (!db) { showToast('Önce Firebase config girin.', 'error'); return; }
+
+    const question = document.getElementById('inp-question').value.trim();
+    const imageUrl = document.getElementById('inp-image').value.trim();
+    const category = document.getElementById('sel-category').value;
+    const points = parseInt(document.getElementById('sel-points').value);
+    const options = ['a','b','c','d'].map(id => ({
+      id,
+      text: document.getElementById('opt-' + id + '-text').value.trim()
+    }));
+
+    if (!question) { showToast('Soru metni boş olamaz.', 'error'); return; }
+    if (!imageUrl) { showToast('Görsel URL boş olamaz.', 'error'); return; }
+    if (options.some(o => !o.text)) { showToast('Tüm şıkları doldurun.', 'error'); return; }
+    if (!selectedCorrect) { showToast('Doğru şıkkı seçin.', 'error'); return; }
+
+    setLoading(true);
+
+    try {
+      const docData = {
+        type: "image",
+        question,
+        hintImageUrl: imageUrl,
+        correctOptionId: selectedCorrect,
+        options,
+        points,
+        isActive: true,
+        createdAt: serverTimestamp(),
+      };
+
+      const ref = await addDoc(collection(db, category), docData);
+
+      recentQuestions.unshift({ id: ref.id, question, imageUrl, category, correctOptionId: selectedCorrect });
+      renderRecent();
+      resetForm();
+      showToast('Soru eklendi!', 'success');
+    } catch (e) {
+      showToast('Hata: ' + e.message, 'error');
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  function setLoading(on) {
+    document.getElementById('submit-label').style.display = on ? 'none' : 'inline';
+    document.getElementById('submit-spinner').style.display = on ? 'block' : 'none';
+    document.getElementById('submit-btn').disabled = on;
+  }
+
+  function resetForm() {
+    document.getElementById('inp-question').value = '';
+    document.getElementById('inp-image').value = '';
+    document.getElementById('img-preview').style.display = 'none';
+    ['a','b','c','d'].forEach(id => {
+      document.getElementById('opt-' + id + '-text').value = '';
+      document.getElementById('opt-' + id).classList.remove('correct');
+      document.getElementById('cbtn-' + id).classList.remove('active');
+    });
+    selectedCorrect = null;
+    document.getElementById('inp-question').focus();
+  }
+
+  // ── RECENT ─────────────────────────────────────────────────────────────────
+
+  const catLabels = {
+    tarih_questions: 'Tarih', sinema_questions: 'Sinema', bilim_questions: 'Bilim',
+    din_questions: 'Din', dizi_questions: 'Dizi', spor_questions: 'Spor',
+    sosyalmedya_questions: 'Sosyal Medya', siyaset_questions: 'Siyaset',
+    infinity_questions: 'Infinity'
+  };
+
+  function renderRecent() {
+    const el = document.getElementById('recent-list');
+    document.getElementById('recent-count').textContent = recentQuestions.length + ' soru';
+    if (recentQuestions.length === 0) {
+      el.innerHTML = '<p style="font-size: 13px; color: var(--text-muted);">Henüz soru eklenmedi.</p>';
+      return;
+    }
+    el.innerHTML = recentQuestions.slice(0, 10).map(q => `
+      <div class="recent-item">
+        <img class="recent-thumb" src="${q.imageUrl}" alt="" onerror="this.style.opacity=0.3">
+        <div class="recent-info">
+          <div class="recent-q">${q.question}</div>
+          <div class="recent-meta">
+            <span class="badge">${catLabels[q.category] || q.category}</span>
+            &nbsp;Doğru: <strong>${q.correctOptionId.toUpperCase()}</strong>
+            &nbsp;· ID: <code style="font-size:11px">${q.id}</code>
+          </div>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  // ── TOAST ──────────────────────────────────────────────────────────────────
+
+  window.showToast = function(msg, type = '') {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.className = 'show ' + type;
+    clearTimeout(window._toastTimer);
+    window._toastTimer = setTimeout(() => { t.className = ''; }, 2800);
+  }
+</script>
+</body>
+</html>
